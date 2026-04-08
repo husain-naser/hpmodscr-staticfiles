@@ -1,4 +1,5 @@
-(function(){
+document.addEventListener("DOMContentLoaded", function () {
+	
 
 /* READ CONFIG */
 
@@ -719,4 +720,4 @@ e.stopPropagation();
 
 
 
-})();
+});
