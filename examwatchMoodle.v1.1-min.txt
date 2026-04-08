@@ -3,23 +3,25 @@
 
 //After making your quiz 'Available but hidden from Course Page', ADD the link here
 window.ExamWatchQuizUrl =
-"https://moodle.polytechnic.bh/moodle/mod/quiz/view.php?id=265371";
+"PASTE YOUR QUIZ URL HERE";
 
 //Penalty for each violation is seconds. We recommend keeping it between 5-10 max
 window.ExamWatchPenalty = 5;
 
 //MODIFY YOUR QUIZ DETAILS HERE
 window.ExamWatchConfig = {
-SCHOOL_NAME: "School of ICT",
-COURSE_CODE: "IT8000",
-COURSE_NAME: "Intro to Cybersecurity",
-EXAM_NAME: "Midterm",
+SCHOOL_NAME: "ENTER SCHOOL NAME HERE",
+COURSE_CODE: "ENTER COURSE CODE HERE",
+COURSE_NAME: "ENTER COURSE NAME HERE",
+EXAM_NAME: "ENTER EXAM NAME HERE",
 
-//you probably wouldn't need to edit the remaining config values. Do with caution as it may change the behavior of the script.
+API_KEY: "ENTER THE API KEY GIVEN IN TEH DOCUMENT HERE",
+
+//you probably wouldn't need to edit the remaining config values or anything else after this line
 SHOW_CAMERA: 1,
 LOG_TO_API: 1,
-API_URL: "https://examwatch.vercel.app/api/violations",
-API_KEY: "examwatch_9f83KJd92kDk2Jd"
+API_URL: "https://examwatch.vercel.app/api/violations"
+
 };
 </script>
 
