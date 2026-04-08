@@ -1,5 +1,31 @@
 (function(){
 
+/* READ CONFIG */
+
+const CONFIG = window.ExamWatchConfig || {};
+
+const QUIZ_URL = window.ExamWatchQuizUrl || "";
+const PENALTY_SECONDS = window.ExamWatchPenalty || 5;
+const SHOW_CAMERA = CONFIG.SHOW_CAMERA ?? 1;
+
+let started=false;
+let locked=false;
+let violations=0;
+let remaining=0;
+let timer=null;
+let ignoreUntil=0;
+
+
+
+const iframe=document.getElementById("quizFrame");
+const container=document.getElementById("examContainer");
+const lockScreen=document.getElementById("lockScreen");
+const lockText=document.getElementById("lockText");
+const resumeBtn=document.getElementById("resumeBtn");
+const refreshBtn = document.getElementById("refreshExam");
+const retryBtn = document.getElementById("retryCamera");
+
+
 
 /* CAMERA WITH RETRY */
 
@@ -66,42 +92,23 @@ If you have any camera issues, please inform your tutor / invigilator.
 
 }
 
-requestCamera();
+if (SHOW_CAMERA) {
+  requestCamera();
 
-document.getElementById("retryCamera").onclick = requestCamera;
-
-
-
-/* READ CONFIG */
-
-const CONFIG = window.ExamWatchConfig || {};
-
-const QUIZ_URL = window.ExamWatchQuizUrl || "";
-const PENALTY_SECONDS = window.ExamWatchPenalty || 5;
-
-
-let started=false;
-let locked=false;
-let violations=0;
-let remaining=0;
-let timer=null;
-let ignoreUntil=0;
+  const retryBtn = document.getElementById("retryCamera");
+  if (retryBtn) {
+    retryBtn.onclick = requestCamera;
+  }
+}
 
 
 
-const iframe=document.getElementById("quizFrame");
-const container=document.getElementById("examContainer");
-const lockScreen=document.getElementById("lockScreen");
-const lockText=document.getElementById("lockText");
-const resumeBtn=document.getElementById("resumeBtn");
-const refreshBtn = document.getElementById("refreshExam");
-const retryBtn = document.getElementById("retryCamera");
 
 
 
 /* ================= HELPERS ================= */
 
-if(retryBtn){
+if(SHOW_CAMERA && retryBtn){
   requestCamera();
   retryBtn.onclick = requestCamera;
 }
