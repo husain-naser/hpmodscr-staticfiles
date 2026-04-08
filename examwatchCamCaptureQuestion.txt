@@ -1,0 +1,93 @@
+<h3 style="text-align: center;">Identity Verification Required (Camera)</h3>
+<p style="text-align: center; max-width: 520px; margin: 0 auto 15px auto;">Please show your face and student ID clearly, then capture your photo before continuing.</p>
+<div style="max-width: 520px; margin: 20px auto; text-align: center; padding: 16px; background: #f5f5f5; border-radius: 8px; border: 1px solid #ddd;"><button id="enableCamBtn" type="button"> Enable Camera </button> <br><br><video id="video" style="border: 1px solid #ccc; display: block; margin: 0px auto;" autoplay="" width="320" height="240" playsinline="">
+</video> <br><br><button id="captureBtn" style="display: block; margin: 0px auto;" type="button"> Capture / Recapture Photo </button> <br><br><canvas id="canvas" style="display: none;" width="320" height="240"> </canvas>
+<div id="status" style="color: green; font-weight: bold; margin-top: 10px;"></div>
+</div>
+<p>
+<script>
+
+let stream=null;
+
+const video=document.getElementById("video");
+const canvas=document.getElementById("canvas");
+const status=document.getElementById("status");
+const enableBtn=document.getElementById("enableCamBtn");
+const captureBtn=document.getElementById("captureBtn");
+
+
+/* enable camera */
+enableBtn.onclick=async function(){
+
+try{
+
+stream=await navigator.mediaDevices.getUserMedia({
+video:{facingMode:"user"}
+});
+
+video.srcObject=stream;
+
+video.style.display="block";
+captureBtn.style.display="inline-block";
+
+status.innerHTML="Camera ready. Capture photo.";
+
+}catch(e){
+
+status.innerHTML="Camera blocked. Please allow camera.";
+
+}
+
+};
+
+
+/* capture / recapture */
+captureBtn.onclick=function(){
+
+canvas.getContext("2d")
+.drawImage(video,0,0,320,240);
+
+canvas.toBlob(function(blob){
+
+const file = new File(
+[blob],
+"identity-photo.png",
+{type:"image/png"}
+);
+
+const question = video.closest(".que");
+
+/* remove existing files */
+question
+.querySelectorAll(".fp-content .fp-file")
+.forEach(f=>f.remove());
+
+/* find Moodle drop zone */
+const drop =
+question.querySelector(".dndupload-target");
+
+if(!drop){
+status.innerHTML="Upload area not found.";
+return;
+}
+
+/* simulate drag drop upload */
+const dt = new DataTransfer();
+dt.items.add(file);
+
+const event = new DragEvent("drop",{
+dataTransfer:dt,
+bubbles:true
+});
+
+drop.dispatchEvent(event);
+
+status.innerHTML=
+"Photo captured and attached. You may recapture if needed.";
+
+},"image/png");
+
+};
+
+</script>
+</p>
