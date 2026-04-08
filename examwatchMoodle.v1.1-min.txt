@@ -5,7 +5,7 @@
 window.ExamWatchQuizUrl =
 "PASTE YOUR QUIZ URL HERE";
 
-//Penalty for each violation is seconds. We recommend keeping it between 5-10 max
+//Penalty for each violation is seconds. We recommend not going excessive in this (i.e. beyond avg set question time) in case students genuinely triggered it by mistake
 window.ExamWatchPenalty = 5;
 
 //MODIFY YOUR QUIZ DETAILS HERE
