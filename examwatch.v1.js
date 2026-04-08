@@ -37,7 +37,7 @@ if(!SHOW_CAMERA){
 
 
 function requestCamera(){
-
+document.getElementById("cameraStatus").style.display="block";
 navigator.mediaDevices.getUserMedia({ video: true })
 .then(stream => {
 
@@ -372,11 +372,12 @@ return;
 
 STUDENT_ID = id;
 STUDENT_NAME = name;
-
+document.getElementById("cameraStatus").style.display="none";
 document.getElementById("examInstructions").style.display="none";
 document.getElementById("studentIdentity").style.display="none";
 document.getElementById("refreshExam").style.display="inline-block";
 document.getElementById("refreshNote").style.display="block";
+
 
 started=true;
 fullscreen();
