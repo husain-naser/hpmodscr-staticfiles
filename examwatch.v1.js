@@ -30,6 +30,36 @@ try {
   
 /* ================= HELPERS ================= */
 
+if (refreshBtn) {
+  refreshBtn.onclick = function () {
+    try {
+
+      ignoreUntil = Date.now() + 3000;
+
+      try {
+        if (iframe?.contentWindow) {
+          iframe.contentWindow.location.reload();
+        } else if (iframe?.src) {
+          iframe.src = iframe.src;
+        }
+      } catch (e) {
+        if (iframe?.src) iframe.src = iframe.src;
+      }
+
+      setTimeout(() => {
+        try{
+          if (!document.fullscreenElement) {
+            document.documentElement.requestFullscreen().catch(() => {});
+          }
+        }catch(e){}
+      }, 300);
+
+    } catch (e) {}
+  };
+}
+
+
+
 function getStudentInfo(){
 return {
 student_name: STUDENT_NAME || "Unknown",
