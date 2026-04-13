@@ -3,19 +3,10 @@ document.addEventListener("DOMContentLoaded", function () {
 
 function isPopupWindow(){
 try{
-
-/* opened via window.open */
-if (window.opener) return true;
-
-/* small popup window */
-if (window.outerWidth < 900 || window.outerHeight < 700) return true;
-
-/* not top-level (rare but useful) */
-if (window.top !== window.self) return true;
-
-}catch(e){}
-
+return !!window.opener;
+}catch(e){
 return false;
+}
 }
 
 try{
