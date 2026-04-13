@@ -553,12 +553,50 @@ lock("Copy attempt");
 }, true);
 
 doc.addEventListener("keydown", e=>{
+
 if(!started || locked) return;
 
+/* Ctrl+C */
 if((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "c"){
 e.preventDefault();
 lock("Ctrl+C");
+return;
 }
+
+/* Print Screen */
+if (e.key === "PrintScreen") {
+try{
+navigator.clipboard.writeText("");
+lock("PrintScreen");
+}catch(e){}
+return;
+}
+
+/* Alt + PrintScreen */
+if (e.altKey && e.key === "PrintScreen") {
+try{
+lock("Alt+PrintScreen");
+}catch(e){}
+return;
+}
+
+/* Windows Snipping Tool */
+if (e.shiftKey && e.metaKey && (e.key === "S" || e.key === "s")) {
+try{
+lock("Snipping Tool");
+}catch(e){}
+return;
+}
+
+/* macOS screenshot */
+if (e.metaKey && e.shiftKey && 
+   (e.key === "3" || e.key === "4" || e.key === "5")) {
+try{
+lock("Mac Screenshot");
+}catch(e){}
+return;
+}
+
 }, true);
 
 doc.addEventListener("cut", e=>{
@@ -615,12 +653,44 @@ lock("Copy attempt");
 }, true);
 
 document.addEventListener("keydown", e=>{
+try{
+
 if(!started || locked) return;
 
+/* Ctrl+C */
 if((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "c"){
 e.preventDefault();
 lock("Ctrl+C");
+return;
 }
+
+/* PrintScreen */
+if (e.key === "PrintScreen") {
+lock("PrintScreen");
+return;
+}
+
+/* Alt + PrintScreen */
+if (e.altKey && e.key === "PrintScreen") {
+lock("Alt+PrintScreen");
+return;
+}
+
+/* Windows Snipping Tool (Win+Shift+S) */
+if (e.shiftKey && e.metaKey && (e.key === "S" || e.key === "s")) {
+lock("Snipping Tool");
+return;
+}
+
+/* macOS screenshots */
+if (e.metaKey && e.shiftKey && 
+   (e.key === "3" || e.key === "4" || e.key === "5")) {
+lock("Mac Screenshot");
+return;
+}
+
+}catch(e){}
+
 }, true);
 
 
