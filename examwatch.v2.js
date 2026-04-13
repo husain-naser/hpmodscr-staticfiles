@@ -1,14 +1,19 @@
 document.addEventListener("DOMContentLoaded", function () {
 	
 
-function isPopupOrModal(){
-try{
 
+function isInsideMoodleModal(){
+try{
 if (window.opener) return true;
 
-if (document.body.classList.contains("modal-open")) return true;
+/* modal backdrop exists */
+if (window.parent.document.querySelector('.modal.show')) return true;
 
-if (document.querySelector(".modal.show")) return true;
+/* modal body wrapper */
+if (window.parent.document.querySelector('.modal-dialog')) return true;
+
+/* body modal class */
+if (window.parent.document.body.classList.contains('modal-open')) return true;
 
 }catch(e){}
 
@@ -16,7 +21,7 @@ return false;
 }
 
 try{
-if(isPopupOrModal()){
+if(isInsideMoodleModal()){
 
 alert(
 "Please open the exam in a new browser tab (Right Click > open in new TAB).\n\n" +
