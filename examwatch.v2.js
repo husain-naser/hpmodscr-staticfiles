@@ -1,13 +1,47 @@
 document.addEventListener("DOMContentLoaded", function () {
 	
 
+function isPopupWindow(){
+try{
+
+/* opened via window.open */
+if (window.opener) return true;
+
+/* small popup window */
+if (window.outerWidth < 900 || window.outerHeight < 700) return true;
+
+/* not top-level (rare but useful) */
+if (window.top !== window.self) return true;
+
+}catch(e){}
+
+return false;
+}
+
+try{
+if(isPopupWindow()){
+
+alert(
+"Please open the exam in a new browser tab.\n\n" +
+"Popup windows may cause issues with fullscreen, focus detection, and submission."
+);
+
+/* optional: try open new tab automatically */
+try{
+window.open(window.location.href, "_blank");
+}catch(e){}
+
+}
+}catch(e){}
+
+
 /* READ CONFIG */
 
 const CONFIG = window.ExamWatchConfig || {};
 
 const QUIZ_URL = window.ExamWatchQuizUrl || "";
 const PENALTY_SECONDS = window.ExamWatchPenalty || 5;
-const SHOW_CAMERA = 0;
+
 
 let started=false;
 let locked=false;
@@ -16,126 +50,48 @@ let remaining=0;
 let timer=null;
 let ignoreUntil=0;
 
-
-
 const iframe=document.getElementById("quizFrame");
 const container=document.getElementById("examContainer");
 const lockScreen=document.getElementById("lockScreen");
 const lockText=document.getElementById("lockText");
 const resumeBtn=document.getElementById("resumeBtn");
 const refreshBtn = document.getElementById("refreshExam");
-const retryBtn = document.getElementById("retryCamera");
 
-
-
-/* CAMERA WITH RETRY */
-
-/* hide camera if disabled */
-if(!SHOW_CAMERA){
-  document.getElementById("cameraSection")?.remove();
-}
-
-
-function requestCamera(){
-	return;
-document.getElementById("cameraStatus").style.display="block";
-navigator.mediaDevices.getUserMedia({ video: true })
-.then(stream => {
-
-const video = document.getElementById("cameraPreview");
-video.srcObject = stream;
-
-document.getElementById("cameraStatus").innerHTML = `
-<div style="
-padding:12px 16px;
-border-radius:6px;
-background:#d1e7dd;
-color:#0f5132;
-border:1px solid #badbcc;
-text-align:left;
-max-width:520px;
-margin:10px auto;
-font-size:14px;
-line-height:1.4;
-">
-<strong><i class="fa fa-check-circle"></i> Camera ready.</strong><br> If you can see yourself correctly, you may click <b>Start Exam</b> to begin. If you have any camera issues, please inform your tutor / invigilator. 
-<span style="color:#495057">Please keep your camera enabled for identity verification during the exam.</span>
-</div>
-`;
-
-document.getElementById("cameraStatus").style.color = "green";
-
-})
-.catch(() => {
-
-document.getElementById("cameraStatus").innerHTML = `
-<div style="
-padding:12px 16px;
-border-radius:6px;
-background:#f8d7da;
-color:#842029;
-border:1px solid #f5c2c7;
-text-align:left;
-max-width:520px;
-margin:10px auto;
-font-size:14px;
-line-height:1.4;
-">
-<strong>Camera blocked.</strong> Click <b>Retry Camera Access</b> or allow camera in your browser.<br><br>
-
-<span style="color:#555">
-If you clicked <b>Block</b> by mistake, click the <i class="fa fa-video-camera"></i> 
-icon in the address bar at the top (next to URL), choose <b>Allow</b>, then click <b>Retry Camera Access</b>.
-If you have any camera issues, please inform your tutor / invigilator.
-</span>
-</div>
-`;
-});
-
-}
-
-if (SHOW_CAMERA) {
-  requestCamera();
-
-  const retryBtn = document.getElementById("retryCamera");
-  if (retryBtn) {
-    retryBtn.onclick = requestCamera;
-  }
-}
-
-
-
-
-
-
+try {
+    const el = document.getElementById("cameraSection");
+    if (el) el.remove();
+  } catch (e) {}
+  
 /* ================= HELPERS ================= */
-
-if(SHOW_CAMERA && retryBtn){
-  requestCamera();
-  retryBtn.onclick = requestCamera;
-}
 
 if (refreshBtn) {
   refreshBtn.onclick = function () {
-    ignoreUntil = Date.now() + 3000;
-
     try {
-      if (iframe.contentWindow) {
-        iframe.contentWindow.location.reload();
-      } else if (iframe.src) {
-        iframe.src = iframe.src;
-      }
-    } catch (e) {
-      if (iframe.src) iframe.src = iframe.src;
-    }
 
-    setTimeout(() => {
-      if (!document.fullscreenElement) {
-        document.documentElement.requestFullscreen().catch(() => {});
+      ignoreUntil = Date.now() + 3000;
+
+      try {
+        if (iframe?.contentWindow) {
+          iframe.contentWindow.location.reload();
+        } else if (iframe?.src) {
+          iframe.src = iframe.src;
+        }
+      } catch (e) {
+        if (iframe?.src) iframe.src = iframe.src;
       }
-    }, 300);
+
+      setTimeout(() => {
+        try{
+          if (!document.fullscreenElement) {
+            document.documentElement.requestFullscreen().catch(() => {});
+          }
+        }catch(e){}
+      }, 300);
+
+    } catch (e) {}
   };
 }
+
 
 
 function getStudentInfo(){
@@ -145,7 +101,6 @@ username: STUDENT_ID || "unknown",
 student_id: STUDENT_ID || "unknown"
 };
 }
-
 
 
 function getBrowserInfo(){
@@ -263,12 +218,13 @@ console.error("Violation log failed",e);
 
 
 function fullscreen(){
+try{
+  ignoreUntil = Date.now()+1200;
 
-
-ignoreUntil = Date.now()+1200;
-if(!document.fullscreenElement && !iframe.ownerDocument.fullscreenElement){
-document.documentElement.requestFullscreen().catch(()=>{});
-}
+  if(!document.fullscreenElement && !iframe.ownerDocument.fullscreenElement){
+    document.documentElement.requestFullscreen().catch(()=>{});
+  }
+}catch(e){}
 }
 
 
@@ -299,7 +255,7 @@ text.includes("review your attempt")
 
 
 function lock(reason){
-
+try{
 if(!started || locked) return;
 
 locked=true;
@@ -329,6 +285,11 @@ resumeBtn.disabled=false;
 }
 
 },1000);
+
+}catch(e){
+	try{ resumeBtn && (resumeBtn.disabled=false); }catch{}
+}
+
 }
 
 function update(reason){
@@ -353,7 +314,9 @@ fullscreen();
 setTimeout(()=>iframe.focus(),200);
 }
 
-resumeBtn.onclick = unlock;
+try{
+  resumeBtn && (resumeBtn.onclick = unlock);
+}catch(e){}
 
 let STUDENT_ID = null;
 let STUDENT_NAME = null;
@@ -361,39 +324,54 @@ let STUDENT_NAME = null;
 const idInput = document.getElementById("studentIdInput");
 const nameInput = document.getElementById("studentNameInput");
 
-document.getElementById("startExam").onclick=function(){
 
-const id = idInput.value.trim();
-const name = nameInput.value.trim();
+const startBtn = document.getElementById("startExam");
+if(startBtn){
+  startBtn.onclick=function(){
+    try{
 
-if(!id || !name){
-alert("Enter Student ID and Name");
-return;
+    const id = idInput.value.trim();
+	const name = nameInput.value.trim();
+
+	if(!id || !name){
+	alert("Enter Student ID and Name");
+	return;
+	}
+
+	STUDENT_ID = id;
+	STUDENT_NAME = name;
+
+	document.getElementById("examInstructions").style.display="none";
+	document.getElementById("studentIdentity").style.display="none";
+	document.getElementById("refreshExam").style.display="inline-block";
+	document.getElementById("refreshNote").style.display="block";
+
+
+	started=true;
+	fullscreen();
+
+	container.style.display="block";
+	this.style.display="none";
+
+	iframe.src=QUIZ_URL;
+
+    }catch(e){
+		fullscreen();
+	}
+  };
 }
 
-STUDENT_ID = id;
-STUDENT_NAME = name;
-//document.getElementById("cameraStatus").style.display="none";
-document.getElementById("examInstructions").style.display="none";
-document.getElementById("studentIdentity").style.display="none";
-document.getElementById("refreshExam").style.display="inline-block";
-document.getElementById("refreshNote").style.display="block";
-
-
-started=true;
-fullscreen();
-
-container.style.display="block";
-this.style.display="none";
-
-iframe.src=QUIZ_URL;
-};
 
 
 iframe.onload = function(){
-
-const doc = iframe.contentDocument;
-
+try{
+	
+let doc;
+try{
+  doc = iframe.contentDocument;
+}catch(e){
+  return;
+}
 /* disable drawer completely */
 
 const style = doc.createElement("style");
@@ -609,12 +587,50 @@ lock("Copy attempt");
 }, true);
 
 doc.addEventListener("keydown", e=>{
+
 if(!started || locked) return;
 
+/* Ctrl+C */
 if((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "c"){
 e.preventDefault();
 lock("Ctrl+C");
+return;
 }
+
+/* Print Screen */
+if (e.key === "PrintScreen") {
+try{
+navigator.clipboard.writeText("");
+lock("PrintScreen");
+}catch(e){}
+return;
+}
+
+/* Alt + PrintScreen */
+if (e.altKey && e.key === "PrintScreen") {
+try{
+lock("Alt+PrintScreen");
+}catch(e){}
+return;
+}
+
+/* Windows Snipping Tool */
+if (e.shiftKey && e.metaKey && (e.key === "S" || e.key === "s")) {
+try{
+lock("Snipping Tool");
+}catch(e){}
+return;
+}
+
+/* macOS screenshot */
+if (e.metaKey && e.shiftKey && 
+   (e.key === "3" || e.key === "4" || e.key === "5")) {
+try{
+lock("Mac Screenshot");
+}catch(e){}
+return;
+}
+
 }, true);
 
 doc.addEventListener("cut", e=>{
@@ -623,13 +639,18 @@ e.preventDefault();
 lock("Cut attempt");
 }, true);
 
+}catch(e){
+  console.error("iframe load error", e);
+}
+
+
 };
 
 
 /* detection */
 
 setInterval(()=>{
-
+try{
 if(!started) return;
 if(locked) return;
 if(Date.now()<ignoreUntil) return;
@@ -653,7 +674,7 @@ if(isExamFinished()) return;
 lock("fullscreen exit");
 return;
 }
-
+}catch(e){}
 },500);
 
 
@@ -666,12 +687,44 @@ lock("Copy attempt");
 }, true);
 
 document.addEventListener("keydown", e=>{
+try{
+
 if(!started || locked) return;
 
+/* Ctrl+C */
 if((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "c"){
 e.preventDefault();
 lock("Ctrl+C");
+return;
 }
+
+/* PrintScreen */
+if (e.key === "PrintScreen") {
+lock("PrintScreen");
+return;
+}
+
+/* Alt + PrintScreen */
+if (e.altKey && e.key === "PrintScreen") {
+lock("Alt+PrintScreen");
+return;
+}
+
+/* Windows Snipping Tool (Win+Shift+S) */
+if (e.shiftKey && e.metaKey && (e.key === "S" || e.key === "s")) {
+lock("Snipping Tool");
+return;
+}
+
+/* macOS screenshots */
+if (e.metaKey && e.shiftKey && 
+   (e.key === "3" || e.key === "4" || e.key === "5")) {
+lock("Mac Screenshot");
+return;
+}
+
+}catch(e){}
+
 }, true);
 
 
@@ -679,7 +732,7 @@ lock("Ctrl+C");
 /* HARD ENFORCEMENT — prevent removing lock */
 
 setInterval(()=>{
-
+try{
 if(!started) return;
 
 if(locked){
@@ -689,15 +742,19 @@ if(!document.body.contains(lockScreen)){
 document.body.appendChild(lockScreen);
 }
 
-lockScreen.style.display="flex";
+try{
+  lockScreen?.style && (lockScreen.style.display="flex");
+}catch(e){}
 
+
+try{
 /* keep iframe disabled */
 iframe.style.pointerEvents="none";
 iframe.style.userSelect="none";
 iframe.style.filter="blur(3px)";
-
+}catch(e){}
 }
-
+}catch(e){}
 },200);
 
 
@@ -719,7 +776,6 @@ e.preventDefault();
 e.stopPropagation();
 }
 }, true);
-
 
 
 });
