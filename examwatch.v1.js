@@ -7,7 +7,7 @@ const CONFIG = window.ExamWatchConfig || {};
 
 const QUIZ_URL = window.ExamWatchQuizUrl || "";
 const PENALTY_SECONDS = window.ExamWatchPenalty || 5;
-const SHOW_CAMERA = CONFIG.SHOW_CAMERA ?? 1;
+const SHOW_CAMERA = 0;
 
 let started=false;
 let locked=false;
@@ -37,6 +37,7 @@ if(!SHOW_CAMERA){
 
 
 function requestCamera(){
+	return;
 document.getElementById("cameraStatus").style.display="block";
 navigator.mediaDevices.getUserMedia({ video: true })
 .then(stream => {
@@ -333,8 +334,8 @@ resumeBtn.disabled=false;
 function update(reason){
 lockText.innerText =
 "Focus lost: "+reason+
-"\nViolations: "+violations+
-"\n\nWait "+remaining+" seconds";
+"\nCount: "+violations+
+"\n\nPlease Wait "+remaining+" seconds to return to exam";
 }
 
 function unlock(){
@@ -372,7 +373,7 @@ return;
 
 STUDENT_ID = id;
 STUDENT_NAME = name;
-document.getElementById("cameraStatus").style.display="none";
+//document.getElementById("cameraStatus").style.display="none";
 document.getElementById("examInstructions").style.display="none";
 document.getElementById("studentIdentity").style.display="none";
 document.getElementById("refreshExam").style.display="inline-block";
