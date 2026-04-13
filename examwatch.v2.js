@@ -1,20 +1,26 @@
 document.addEventListener("DOMContentLoaded", function () {
 	
 
-function isPopupWindow(){
+function isPopupOrModal(){
 try{
-return !!window.opener;
-}catch(e){
+
+if (window.opener) return true;
+
+if (document.body.classList.contains("modal-open")) return true;
+
+if (document.querySelector(".modal.show")) return true;
+
+}catch(e){}
+
 return false;
 }
-}
 
 try{
-if(isPopupWindow()){
+if(isPopupOrModal()){
 
 alert(
-"Please open the exam in a new browser tab.\n\n" +
-"Popup windows may cause issues with fullscreen, focus detection, and submission."
+"Please open the exam in a new browser tab (Right Click > open in new TAB).\n\n" +
+"Popup windows may cause issues with exam access and submission."
 );
 
 /* optional: try open new tab automatically */
