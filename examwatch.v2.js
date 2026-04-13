@@ -373,7 +373,7 @@ return;
 
 STUDENT_ID = id;
 STUDENT_NAME = name;
-document.getElementById("cameraStatus").style.display="none";
+//document.getElementById("cameraStatus").style.display="none";
 document.getElementById("examInstructions").style.display="none";
 document.getElementById("studentIdentity").style.display="none";
 document.getElementById("refreshExam").style.display="inline-block";
